@@ -1,20 +1,54 @@
 import pandas as pd
 
-usuariosdf = pd.read_excel("./data/usuarios_sistema_completo.xlsx")
-#print(usuariosdf)
+# Leer los datos del archivo Excel
+usuariosDataFrame = pd.read_excel("./Data/usuarios_sistema_completo.xlsx")
 
-print(usuariosdf.isnull().sum())
+# Asegurar que la columna de fecha sea tipo datetime
+usuariosDataFrame['fecha_nacimiento'] = pd.to_datetime(usuariosDataFrame['fecha_nacimiento'], errors='coerce')
+
+# Revisar valores nulos
+print("Valores nulos por columna:")
+print(usuariosDataFrame.isnull().sum())
+
+# Listado solo de aprendices
+print("Aprendices:")
+print(usuariosDataFrame.query('tipo_usuario == "aprendiz"'))
+
+# Listado de instructores o docentes
+print("Docentes:")
+print(usuariosDataFrame.query('tipo_usuario == "docente"'))
+
+# Profesores especializados en Ingeniería de Sistemas
+print("Docentes especializados en Ingeniería de Sistemas:")
+print(usuariosDataFrame[usuariosDataFrame['especialidad'].isin(['Ingenieria de Sistemas'])])
 
 
-#CONSULTAS DETALLADAS
+# Cargar los datos
+df = pd.read_excel("./Data/usuarios_sistema_completo.xlsx")
 
-#1. necesito listado de aprendices
-#2. necesito listado de instructores o profesores
-#3. necesito listado de especialistas en desarollo web o sistemas
-#4. necesito listado de solo usuarios con direccion en medellin
-#5. necesito listado de solo usuarios cuyas direcciones terminen en sur
-#6. necesito listado de especialitas que contengan la palabra datos
-#7. necesito profesores de itagui
-#8. necesito una lista de nacidos en los 90s
-#9. necesito una lista de profesores mayores
-#10. necesito una lista de profesores y estudiantes nacidos en el nuevo milenio  
+# Convertir la columna de fecha a tipo datetime
+df['fecha_nacimiento'] = pd.to_datetime(df['fecha_nacimiento'], errors='coerce')
+
+# Usuarios con dirección en Medellín
+print("Usuarios con dirección en Medellín:")
+print(df[df['direccion'].str.contains("medellin|med", case=False, na=False)])
+
+# Usuarios cuya dirección termina en 'sur'
+print("Usuarios cuya dirección termina en 'sur':")
+print(df[df['direccion'].str.strip().str.endswith("sur", na=False)])
+
+# Docentes con 'datos' en la especialidad
+print("Docentes con 'datos' en la especialidad:")
+print(df[df['especialidad'].str.contains("datos", case=False, na=False)])
+
+# Usuarios nacidos en o antes de 1990
+print("Usuarios nacidos en o antes de 1990:")
+print(df[df['fecha_nacimiento'].dt.year <= 1990])
+
+# Docentes mayores (nacidos en o antes de 1975)
+print("Docentes mayores (nacidos en o antes de 1975):")
+print(df[(df['fecha_nacimiento'].dt.year <= 1975) & (df['tipo_usuario'] == "docente")])
+
+# Profesores y aprendices nacidos en o después del 2000
+print("Profesores y aprendices nacidos en o después del 2000:")
+print(df[(df['fecha_nacimiento'].dt.year >= 2000) & (df['tipo_usuario'].isin(["docente", "estudiante"]))])
